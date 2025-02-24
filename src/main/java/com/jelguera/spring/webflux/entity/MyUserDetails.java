@@ -29,6 +29,8 @@ public class MyUserDetails implements UserDetails {
     private String username;
     @Column("CONTRASENIA")
     private String password;
+    @Column("ESTADO")
+    private String estado;
     @Column("FECHA_CREACION")
     private Timestamp fechaCreacion;
 

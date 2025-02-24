@@ -1,14 +1,20 @@
 package com.jelguera.spring.webflux.service;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.jelguera.spring.webflux.entity.Autor;
+import com.jelguera.spring.webflux.entity.MyUserDetails;
 import com.jelguera.spring.webflux.entity.Nacionalidad;
 import com.jelguera.spring.webflux.model.AutorRequest;
 import com.jelguera.spring.webflux.model.EstadoRequest;
+import com.jelguera.spring.webflux.model.NewUserRequest;
 import com.jelguera.spring.webflux.repository.AutorRepository;
 import com.jelguera.spring.webflux.repository.AutorRepository2;
 import com.jelguera.spring.webflux.repository.NacionalidadRepository;
@@ -29,10 +35,9 @@ public class AutorService {
     @Autowired
     private AutorRepository2 autorRepository2;
 
- 
+    @Autowired
+    private com.jelguera.spring.webflux.repository.UserDetailsRepository UserDetailsRepository;
 
- 
-    
     
     public Mono<Autor> create(AutorRequest autorRequest) {
         Autor c = Autor.builder()
@@ -135,6 +140,19 @@ public class AutorService {
 
     public Flux<Autor> filtrarDatos(String nombre, String nacionalidad, LocalDate fechaNacimiento, String estado) {
         return autorRepository2.findAll(nombre, nacionalidad, fechaNacimiento, estado);
+    }
+
+    public Mono<MyUserDetails> createUser(NewUserRequest newUserRequest) {
+        MyUserDetails c = new MyUserDetails();
+        c.setUsername(newUserRequest.getUsuario());
+        c.setPassword(newUserRequest.getContrasenia());
+        c.setFechaCreacion(Timestamp.from(Instant.now()));
+        return  UserDetailsRepository.save(c)
+        .doOnError(error -> {
+            System.err.println("Error saving create book: " + error.getMessage());
+        });
+            
+
     }
 }
     
